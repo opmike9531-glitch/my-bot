@@ -9,4 +9,4 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # This tells the bot to look inside the "downloaded_files" folder
-CMD ["python", "downloaded_files/app.py"]
+CMD ["python", "app.py"]
