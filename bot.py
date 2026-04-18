@@ -1,45 +1,40 @@
-from playwright.sync_api import sync_playwright
-import time
+import asyncio
+from playwright.async_api import async_playwright
 
-def run_bot():
-    with sync_playwright() as p:
-        print("🚀 Robot is online...")
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+async def solve_ixl(username, password, skill_url):
+    async with async_playwright() as p:
+        # headless=True is the most important part for Render!
+        browser = await p.chromium.launch(headless=True, args=["--no-sandbox"])
+        context = await browser.new_context()
+        page = await context.new_page()
 
-        # 1. LOG IN (Using the working method)
-        print("🌐 Logging into IXL...")
-        page.goto("https://www.ixl.com/signin", wait_until="networkidle")
-        page.locator('input#siusername').fill("0617110718@browardcps") # <--- USERNAME
-        page.locator('input#sipassword').fill("1234well1*")   # <--- PASSWORD
-        page.keyboard.press("Enter")
-        
-        time.sleep(10)
-        print(f"✅ Dashboard reached: {page.title()}")
+        try:
+            print(f"Logging in as {username}...")
+            await page.goto("https://www.ixl.com/signin")
+            await page.fill("#siusername", username)
+            await page.fill("#sipassword", password)
+            await page.click("#sindiv > form > div.submit-button-container > button")
+            
+            # Wait for login to finish
+            await page.wait_for_timeout(3000)
 
-        # 2. FIND THE SKILL
-        # Replace 'V7F' with whatever skill you need to do!
-        skill_code = "V7F" 
-        print(f"🔍 Searching for skill: {skill_code}")
-        
-        # Click the search bar and type the code
-        page.locator('input.nav-search-input').fill(skill_code)
-        page.keyboard.press("Enter")
-        
-        # Wait for the search results and click the first one
-        time.sleep(5)
-        print("🖱️ Clicking the skill...")
-        page.click('.search-result-link')
-        
-        # 3. GET THE QUESTION
-        time.sleep(5)
-        print(f"📖 Now on skill: {page.title()}")
-        
-        # Take a screenshot so we can see the math problem!
-        page.screenshot(path="question.png")
-        print("📸 Screenshot of the question saved as 'question.png'.")
+            print(f"Heading to skill: {skill_url}")
+            await page.goto(skill_url)
 
-        browser.close()
+            # Example loop to solve problems
+            for i in range(10):  # Adjust number of problems as needed
+                print(f"Solving problem {i+1}...")
+                # This part depends on the specific IXL skill layout
+                # Usually you'd look for the question text and input box
+                await page.wait_for_timeout(2000) 
+                
+            print("Session complete!")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            await browser.close()
 
+# This is for testing or internal calls
 if __name__ == "__main__":
-    run_bot()
+    # You can put test credentials here if running locally
+    pass
