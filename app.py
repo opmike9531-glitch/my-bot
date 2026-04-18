@@ -4,7 +4,7 @@ from bot import solve_ixl
 
 app = Flask(__name__)
 
-# Dashboard design: Black, Neon Green, and Electric Blue
+# Updated Theme: Black, Neon Green, and Electric Blue
 HTML_PAGE = """
 <!DOCTYPE html>
 <html>
@@ -38,7 +38,7 @@ HTML_PAGE = """
                 <label>Password</label>
                 <input type="password" name="password" placeholder="IXL Password" required>
             </div>
-            <button type="submit">Connect to Flow</button>
+            <button type="submit">Connect IXL Dashboard</button>
         </form>
         <div class="footer">Server Status: Online | Encryption: Active</div>
     </div>
@@ -54,13 +54,15 @@ def home():
 def run_bot():
     username = request.form.get('username')
     password = request.form.get('password')
+    # Defaulting to the main dashboard since you want to handle skills manually
     skill_url = "https://www.ixl.com/dashboard" 
 
     try:
+        # This triggers the login process in bot.py
         asyncio.run(solve_ixl(username, password, skill_url))
-        return "<h1 style='color: #00ff7f; background: #000; text-align: center; padding: 50px;'>Success! Flow is active.</h1>"
+        return "<h1 style='color: #00ff7f; background: #000; font-family: sans-serif; text-align: center; padding: 50px;'>Success! Account Synced to Flow Dashboard.</h1>"
     except Exception as e:
-        return f"<h1 style='color: red;'>Error: {str(e)}</h1>"
+        return f"<h1 style='color: #00ccff; background: #000; font-family: sans-serif; text-align: center; padding: 50px;'>Connection Error: {str(e)}</h1>"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
