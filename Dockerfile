@@ -1,12 +1,20 @@
+# Use the specific Playwright image that matches your current error logs
 FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy everything from GitHub into the container
+# Copy your files into the container
 COPY . /app
 
-# Install the requirements
+# Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# This tells the bot to look inside the "downloaded_files" folder
+# Ensure Playwright browsers are installed correctly for this version
+RUN playwright install --with-deps chromium
+
+# Expose the port Flask runs on
+EXPOSE 10000
+
+# Start the application
 CMD ["python", "app.py"]
